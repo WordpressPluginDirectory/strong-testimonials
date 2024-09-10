@@ -1,0 +1,19 @@
+span.wpmtst_import_notice.wpmtst-alert,
+span#wpmtst-import-response.wpmtst-alert {
+    display: block;
+    max-width: 650px;
+}
+
+span#wpmtst-import-response {
+    margin-bottom: 20px;
+}
+#wpmtst-import-response.wpmtst-warning {
+    color: #fe4646;
+    font-size: 16px;
+    font-weight: 600;
+}
+#wpmtst-import-response.wpmtst-success {
+    color: #00a32a;
+    font-size: 16px;
+    font-weight: 600;
+}
