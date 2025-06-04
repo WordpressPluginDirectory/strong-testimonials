@@ -1,3 +1,25 @@
+= 3.2.11 - 04.06.2025 -
+- Fixed: Compatibility with plugins that edit wp_kses_post allowed html list. eg. "The Post Grid".
+- Fixed: Slider image lazy-load not working properly.
+- Fixed: Pagination was not working on the front page.
+- Update: JQuery Validate to the latest version.
+
+= 3.2.10 - 28.05.2025 -
+- Fixed: Compatibility issue with the average rating shortcode when using multiple category attributes.
+- Added: Option to display the 'Read More' button inline with the testimonial content.
+- Added: Submission date column for testimonials in the admin list table.
+
+= 3.2.9 - 20.05.2025 -
+- Fixed: Missing notification system files in wp.org deploy.
+
+= 3.2.8 - 19.05.2025 -
+- Fixed: Admin list table broken if the testimonial had a table as post content.
+- Added: Added previously removed config update functions.
+- Fixed: Prevent fatal error if wpmtst_custom_forms is not array.
+
+= 3.2.7 - 19.03.2025 -
+- Fixed: Ensured only valid social platform image URLs are inserted into testimonials, preventing broken images.
+
 = 3.2.6 - 17.03.2025 -
 - Added: Integrated WPChill Notification System.
 - Fixed: Gravatar overwriting platform user images.

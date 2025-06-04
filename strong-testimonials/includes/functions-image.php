@@ -24,10 +24,8 @@ function wpmtst_get_thumbnail( $size = null ) {
 
 	// check for a featured image
 	if ( has_post_thumbnail( $id ) ) {
-
 		// show featured image
 		$img = get_the_post_thumbnail( $id, $size );
-
 	} else {
 
 		// no featured image, now what?
@@ -36,7 +34,6 @@ function wpmtst_get_thumbnail( $size = null ) {
 			// view > gravatar > show gravatar (use default, if not found)
 
 			$img = get_avatar( wpmtst_get_field( 'email' ), apply_filters( 'wpmtst_gravatar_size', $size ) );
-
 		} elseif ( 'if' === WPMST()->atts( 'gravatar' ) ) {
 			// view > gravatar > show gravatar only if found (and has email)
 
@@ -128,12 +125,16 @@ function wpmtst_add_lazyload( $attr, $attachment, $size ) {
 		$options = get_option( 'wpmtst_options' );
 
 		if ( isset( $options['lazyload'] ) && $options['lazyload'] ) {
-			if ( 'wpm-testimonial' === get_post_type( $attachment->post_parent ) && ! is_admin() ) {
-				$attr['class']                  .= ' lazy-load';
-							$attr['data-src']    = $attr['src'];
-							$attr['data-srcset'] = $attr['srcset'];
-							unset( $attr['src'] );
-							unset( $attr['srcset'] );
+			$parent_type = get_post_type( $attachment->post_parent );
+			if ( ( 'testimonial' === $parent_type || 'wpm-testimonial' === $parent_type ) && ! is_admin() ) {
+				$attr['class'] .= ' lazy-load';
+
+				$attr['data-src'] = $attr['src'];
+				unset( $attr['src'] );
+				if ( isset( $attr['srcset'] ) ) {
+					$attr['data-srcset'] = $attr['srcset'];
+					unset( $attr['srcset'] );
+				}
 			}
 		}
 	}
@@ -223,7 +224,7 @@ add_filter( 'wpmtst_thumbnail_img', 'wpmtst_thumbnail_img_platform', 10, 3 );
 function wpmtst_thumbnail_img_platform_general( $img, $post_id, $size ) {
 
 	$platform_user_photo = get_post_meta( $post_id, 'platform_user_photo', true );
-	if ( ! $platform_user_photo ) {
+	if ( ! $platform_user_photo || ! wpmtst_is_valid_image_url( $platform_user_photo ) ) {
 		return $img;
 	}
 
@@ -270,3 +271,26 @@ function wpmtst_thumbnail_img_platform_woocommerce( $img, $post_id, $size ) {
 	return sprintf( '<img src="%s" %s %s/>', get_avatar_url( $email ), $width ? "width='{$width}'" : '', $height ? "height='{$height}'" : '' );
 }
 add_filter( 'wpmtst_thumbnail_img_platform_woocommerce', 'wpmtst_thumbnail_img_platform_woocommerce', 10, 3 );
+
+function wpmtst_is_valid_image_url( $url ) {
+	// Check local
+	$site_url = site_url();
+	if ( strpos( $url, $site_url ) === 0 ) {
+		// Obține path-ul relativ
+		$relative_path = str_replace( $site_url, '', $url );
+		$file_path     = ABSPATH . ltrim( $relative_path, '/' );
+
+		return file_exists( $file_path );
+	}
+
+	// Check external
+	$headers = @get_headers( $url, 1 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+	if ( false === $headers ) {
+		return false;
+	}
+
+	$status_line = is_array( $headers ) && isset( $headers[0] ) ? $headers[0] : '';
+
+	return strpos( $status_line, '200 OK' ) !== false;
+}
